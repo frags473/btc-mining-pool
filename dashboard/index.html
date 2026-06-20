@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BTC+DGB Solo Mining Pool</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0d1117; color: #e6edf3; min-height: 100vh; padding: 24px; }
+    h1 { font-size: 1.6rem; font-weight: 600; margin-bottom: 4px; color: #f0883e; }
+    .subtitle { color: #8b949e; font-size: 0.9rem; margin-bottom: 28px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 28px; }
+    .card { background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 18px 20px; }
+    .card-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: #8b949e; margin-bottom: 8px; }
+    .card-value { font-size: 1.6rem; font-weight: 700; color: #58a6ff; }
+    .card-value.green { color: #3fb950; } .card-value.orange { color: #f0883e; } .card-value.purple { color: #bc8cff; }
+    .section-title { font-size: 1rem; font-weight: 600; color: #8b949e; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.06em; }
+    table { width: 100%; border-collapse: collapse; background: #161b22; border: 1px solid #30363d; border-radius: 10px; overflow: hidden; margin-bottom: 28px; }
+    th { background: #21262d; padding: 10px 16px; text-align: left; font-size: 0.78rem; text-transform: uppercase; color: #8b949e; border-bottom: 1px solid #30363d; }
+    td { padding: 10px 16px; font-size: 0.9rem; border-bottom: 1px solid #21262d; }
+    tr:last-child td { border-bottom: none; }
+    .badge-green { background: #1a3a1a; color: #3fb950; border: 1px solid #3fb950; display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+    .status-bar { display: flex; gap: 16px; align-items: center; background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 12px 20px; margin-bottom: 28px; font-size: 0.85rem; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+    .dot-green { background: #3fb950; box-shadow: 0 0 6px #3fb950; } .dot-red { background: #f85149; box-shadow: 0 0 6px #f85149; }
+    .refresh-note { color: #8b949e; font-size: 0.78rem; margin-left: auto; }
+    footer { color: #8b949e; font-size: 0.78rem; text-align: center; margin-top: 16px; }
+  </style>
+</head>
+<body>
+<h1>⛏ BTC + DGB Solo Mining Pool</h1>
+<p class="subtitle">AuxPoW Merged Mining — Solo Pool</p>
+<div class="status-bar">
+  <span id="svc-btc"><span class="dot dot-red"></span>Bitcoin</span>
+  <span id="svc-dgb"><span class="dot dot-red"></span>DigiByte</span>
+  <span id="svc-miners"><span class="dot dot-red"></span>Miners</span>
+  <span class="refresh-note" id="last-update">Connecting...</span>
+</div>
+<div class="grid">
+  <div class="card"><div class="card-label">Connected Miners</div><div class="card-value green" id="miners">—</div></div>
+  <div class="card"><div class="card-label">Estimated Hashrate</div><div class="card-value" id="hashrate">—</div></div>
+  <div class="card"><div class="card-label">Shares Submitted</div><div class="card-value orange" id="shares">—</div></div>
+  <div class="card"><div class="card-label">Best Share Diff</div><div class="card-value purple" id="best-diff">—</div></div>
+  <div class="card"><div class="card-label">BTC Block Height</div><div class="card-value" id="btc-height">—</div></div>
+  <div class="card"><div class="card-label">DGB Block Height</div><div class="card-value" id="dgb-height">—</div></div>
+</div>
+<div class="section-title">Workers</div>
+<table>
+  <thead><tr><th>Worker</th><th>Shares</th><th>Hashrate</th><th>Last Share</th><th>Status</th></tr></thead>
+  <tbody id="workers-body"><tr><td colspan="5" style="color:#8b949e;text-align:center">Loading...</td></tr></tbody>
+</table>
+<footer>BTC+DGB AuxPoW Solo Pool &mdash; API: <code>/api/stats</code></footer>
+<script>
+  function fmtHash(h){if(h>=1e15)return(h/1e15).toFixed(2)+' PH/s';if(h>=1e12)return(h/1e12).toFixed(2)+' TH/s';if(h>=1e9)return(h/1e9).toFixed(2)+' GH/s';if(h>=1e6)return(h/1e6).toFixed(2)+' MH/s';if(h>=1e3)return(h/1e3).toFixed(2)+' KH/s';return h.toFixed(0)+' H/s';}
+  function timeAgo(ts){const s=Math.floor(Date.now()/1000-ts);if(s<60)return s+'s ago';if(s<3600)return Math.floor(s/60)+'m ago';return Math.floor(s/3600)+'h ago';}
+  async function refresh(){
+    try{
+      const d=await(await fetch('/api/stats')).json();const p=d.pool||d;
+      document.getElementById('miners').textContent=p.connected_miners??'—';
+      document.getElementById('hashrate').textContent=fmtHash(p.hashrate_est||0);
+      document.getElementById('shares').textContent=p.shares_total??'—';
+      document.getElementById('best-diff').textContent=p.best_share_diff_fmt||(p.best_share_diff?p.best_share_diff.toExponential(2):'—');
+      document.getElementById('btc-height').textContent=(d.btc&&d.btc.height)||p.btc_height||'—';
+      document.getElementById('dgb-height').textContent=(d.dgb&&d.dgb.height)||p.dgb_height||'—';
+      const btcOk=d.btc&&d.btc.height>0,dgbOk=d.dgb&&d.dgb.height>0,minersOk=(p.connected_miners||0)>0;
+      document.getElementById('svc-btc').innerHTML=`<span class="dot ${btcOk?'dot-green':'dot-red'}"></span>Bitcoin`;
+      document.getElementById('svc-dgb').innerHTML=`<span class="dot ${dgbOk?'dot-green':'dot-red'}"></span>DigiByte`;
+      document.getElementById('svc-miners').innerHTML=`<span class="dot ${minersOk?'dot-green':'dot-red'}"></span>Miners`;
+      const items=Array.isArray(d.miners)?d.miners:Object.values(d.miners||d.workers||{});
+      const tbody=document.getElementById('workers-body');
+      tbody.innerHTML=items.length?items.map(w=>`<tr><td><code style="color:#58a6ff">${w.worker||'unknown'}</code></td><td>${w.shares_accepted||0}</td><td>${fmtHash(w.hashrate_est||0)}</td><td>${w.last_share?timeAgo(w.last_share):'—'}</td><td><span class="badge-green">Active</span></td></tr>`).join(''):'<tr><td colspan="5" style="color:#8b949e;text-align:center">No workers connected</td></tr>';
+      document.getElementById('last-update').textContent='Updated '+new Date().toLocaleTimeString();
+    }catch(e){document.getElementById('last-update').textContent='API unreachable — '+new Date().toLocaleTimeString();}
+  }
+  refresh();setInterval(refresh,10000);
+</script>
+</body>
+</html>

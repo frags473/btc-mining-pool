@@ -1,0 +1,19 @@
+# Pool configuration — copy this to pool.conf and fill in your values.
+# pool.conf is gitignored and MUST never be committed.
+
+[bitcoin]
+rpc_host = 127.0.0.1
+rpc_port = 8332
+rpc_user = YOUR_BTC_RPC_USERNAME
+rpc_pass = YOUR_BTC_RPC_PASSWORD
+
+[digibyte]
+rpc_host = 127.0.0.1
+rpc_port = 14022
+rpc_user = YOUR_DGB_RPC_USERNAME
+rpc_pass = YOUR_DGB_RPC_PASSWORD
+
+[pool]
+btc_address = YOUR_BTC_PAYOUT_ADDRESS
+dgb_address = YOUR_DGB_PAYOUT_ADDRESS
+pool_sig = /YourPoolName/

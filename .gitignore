@@ -1,0 +1,27 @@
+# Credentials — NEVER commit pool.conf (contains passwords and wallet addresses)
+pool.conf
+
+# Config files with real values
+*.conf
+!*.conf.example
+!config/nginx-pool.conf
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Logs
+*.log
+
+# Backups
+*.bak
+*.orig
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/

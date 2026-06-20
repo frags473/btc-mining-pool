@@ -1,0 +1,18 @@
+[Unit]
+Description=BTC+DGB AuxPow Merged Mining Proxy
+After=network-online.target bitcoin.service postgresql.service
+Wants=network-online.target
+
+[Service]
+User=harry
+ExecStartPre=/bin/sleep 5
+ExecStart=/usr/bin/python3 /home/harry/auxpow_proxy.py
+Restart=on-failure
+RestartSec=15
+StartLimitIntervalSec=120
+StartLimitBurst=5
+StandardOutput=append:/home/harry/auxpow_proxy.log
+StandardError=append:/home/harry/auxpow_proxy.log
+
+[Install]
+WantedBy=multi-user.target

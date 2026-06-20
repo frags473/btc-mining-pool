@@ -1,0 +1,11 @@
+# DigiByte Core — copy to ~/.digibyte/digibyte.conf
+rpcuser=YOUR_DGB_RPC_USERNAME
+rpcpassword=YOUR_STRONG_PASSWORD
+rpcallowip=127.0.0.1
+rpcbind=127.0.0.1
+rpcport=14022
+txindex=1
+server=1
+daemon=1
+dbcache=512
+maxmempool=300
