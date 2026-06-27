@@ -1,4 +1,4 @@
-# BTC + DGB AuxPoW Solo Mining Pool
+# BTC + DGB AuxPoW Solo Mining Pool v1
 
 A lightweight solo mining pool for **Bitcoin (BTC)** with **DigiByte (DGB) merged mining via AuxPoW**, running on a single Linux server.
 
